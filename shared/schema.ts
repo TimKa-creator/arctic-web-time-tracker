@@ -37,7 +37,10 @@ export const timeEntriesRelations = relations(timeEntries, ({ one }) => ({
 // === BASE SCHEMAS ===
 
 export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true });
-export const insertTimeEntrySchema = createInsertSchema(timeEntries).omit({ id: true, createdAt: true });
+export const insertTimeEntrySchema = createInsertSchema(timeEntries).extend({
+  startTime: z.coerce.date(),
+  endTime: z.coerce.date().nullable().optional(),
+}).omit({ id: true, createdAt: true });
 
 // === EXPLICIT API CONTRACT TYPES ===
 
