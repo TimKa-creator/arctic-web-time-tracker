@@ -3,16 +3,26 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Sidebar } from "@/components/Sidebar";
+
+import Tracker from "@/pages/Tracker";
+import Projects from "@/pages/Projects";
+import Reports from "@/pages/Reports";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+    <div className="flex min-h-screen bg-background">
+      <Sidebar />
+      <main className="flex-1 md:ml-72 min-h-screen relative">
+        <Switch>
+          <Route path="/" component={Tracker} />
+          <Route path="/projects" component={Projects} />
+          <Route path="/reports" component={Reports} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 
