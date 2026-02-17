@@ -28,11 +28,12 @@ export function GlobalTracker() {
   const [taskName, setTaskName] = useState("");
   const [projectId, setProjectId] = useState<string>("");
 
-  // Sync inputs when active entry exists (e.g. on refresh)
+  // Timer Persistence: Sync inputs when active entry exists (e.g. on refresh)
+  // Ensure we only set if empty to avoid overwriting user typing before start
   useEffect(() => {
     if (activeEntry) {
-      setTaskName(activeEntry.taskName);
-      if (activeEntry.projectId) {
+      if (!taskName) setTaskName(activeEntry.taskName);
+      if (!projectId && activeEntry.projectId) {
         setProjectId(activeEntry.projectId.toString());
       }
     }

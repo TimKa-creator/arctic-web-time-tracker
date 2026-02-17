@@ -17,8 +17,19 @@ export function useTimer() {
   useEffect(() => {
     if (activeEntry) {
       const startTime = new Date(activeEntry.startTime);
+      
+      // Fix NaN : NaN Display: Validate startTime
+      if (isNaN(startTime.getTime())) {
+        console.error("Invalid start time for active entry:", activeEntry.startTime);
+        setElapsed(0);
+        return;
+      }
+
       const updateElapsed = () => {
-        setElapsed(differenceInSeconds(new Date(), startTime));
+        const now = new Date();
+        const diff = differenceInSeconds(now, startTime);
+        // Ensure no negative elapsed if server time is slightly ahead
+        setElapsed(Math.max(0, diff));
       };
       
       updateElapsed(); // Initial update
@@ -68,9 +79,13 @@ export function useTimer() {
   };
 
   const stopTimer = async () => {
-    if (!activeEntry) return;
+    if (!activeEntry) {
+      console.warn("Stop timer called but no active entry found.");
+      return;
+    }
 
     try {
+      console.log("Stopping timer for entry:", activeEntry.id);
       await updateMutation.mutateAsync({
         id: activeEntry.id,
         endTime: new Date().toISOString(),
@@ -78,7 +93,12 @@ export function useTimer() {
       setElapsed(0);
       toast({ title: "Timer stopped", description: "Time entry saved successfully." });
     } catch (error) {
-      console.error("Failed to stop timer:", error);
+      console.error("Failed to stop timer. Entry ID:", activeEntry.id, "Error:", error);
+      toast({
+        title: "Failed to stop timer",
+        description: "Please check the console for details and try again.",
+        variant: "destructive",
+      });
     }
   };
 
