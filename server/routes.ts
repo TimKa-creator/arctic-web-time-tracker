@@ -55,9 +55,20 @@ export async function registerRoutes(
 
   app.post(api.timeEntries.create.path, async (req, res) => {
     try {
-      // Ensure startTime is coerced to Date if string
-      // Zod schema should handle this if setup correctly, but let's be safe
       const input = api.timeEntries.create.input.parse(req.body);
+      
+      // Fix 400 Bad Request on Start: Add 15-second tolerance for future time
+      const startTime = new Date(input.startTime);
+      const now = new Date();
+      const fifteenSecondsBuffer = 15 * 1000;
+      
+      if (startTime.getTime() > now.getTime() + fifteenSecondsBuffer) {
+        return res.status(400).json({
+          message: "Start time cannot be in the future",
+          field: "startTime"
+        });
+      }
+
       const entry = await storage.createTimeEntry(input);
       res.status(201).json(entry);
     } catch (err) {
@@ -74,6 +85,23 @@ export async function registerRoutes(
   app.put(api.timeEntries.update.path, async (req, res) => {
     try {
       const input = api.timeEntries.update.input.parse(req.body);
+      
+      // Fix Manual Time Entry: Validation with 15s tolerance
+      if (input.startTime) {
+        const startTime = new Date(input.startTime);
+        const now = new Date();
+        if (startTime.getTime() > now.getTime() + 15000) {
+          return res.status(400).json({ message: "Start time cannot be in the future", field: "startTime" });
+        }
+      }
+      if (input.endTime) {
+        const endTime = new Date(input.endTime);
+        const now = new Date();
+        if (endTime.getTime() > now.getTime() + 15000) {
+          return res.status(400).json({ message: "End time cannot be in the future", field: "endTime" });
+        }
+      }
+
       const entry = await storage.updateTimeEntry(Number(req.params.id), input);
       if (!entry) return res.status(404).json({ message: "Entry not found" });
       res.json(entry);
