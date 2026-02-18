@@ -3,6 +3,7 @@ import { Play, Square, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useTimer } from "@/hooks/use-timer";
 import { useProjects } from "@/hooks/use-projects";
+import { useTimeEntries } from "@/hooks/use-time-entries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
