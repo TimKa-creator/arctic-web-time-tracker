@@ -45,4 +45,4 @@
 > The bug is identified: the validation schema expects a Date object, but receives a JSON string for startTime. Please fix this:
 > - Update Schema: In shared/schema.ts, change validation for startTime and endTime from z.date() to z.coerce.date().
 > - Check API Route: Ensure req.body is passed through schema.parse() before sending to Drizzle.
-> - Manual Entry Fix: Apply the same z.coerce.date() fix for manual time entry logic.
+> - Manual Entry Fix: Apply the same z.coerce.date() fix for manual time entry logic. 
