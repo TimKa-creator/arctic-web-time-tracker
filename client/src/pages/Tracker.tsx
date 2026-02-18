@@ -49,9 +49,7 @@ export default function Tracker() {
 
   return (
     <div className="space-y-8">
-      <GlobalTracker />
-      
-      <div className="max-w-4xl mx-auto px-4 pb-12">
+      <div className="max-w-4xl mx-auto pb-12">
         {days.length === 0 ? (
           <div className="text-center py-20 bg-muted/30 rounded-3xl border-2 border-dashed border-muted">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

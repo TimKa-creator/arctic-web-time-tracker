@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Play, Square, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useTimer } from "@/hooks/use-timer";
@@ -24,9 +24,17 @@ function formatDuration(seconds: number) {
 export function GlobalTracker() {
   const { activeEntry, elapsed, startTimer, stopTimer, isPending } = useTimer();
   const { data: projects } = useProjects();
+  const { data: entries } = useTimeEntries();
   
   const [taskName, setTaskName] = useState("");
   const [projectId, setProjectId] = useState<string>("");
+
+  // Get unique task names for autocomplete
+  const taskSuggestions = useMemo(() => {
+    if (!entries) return [];
+    const names = entries.map(e => e.taskName);
+    return Array.from(new Set(names)).sort();
+  }, [entries]);
 
   // Timer Persistence: Sync inputs when active entry exists (e.g. on refresh)
   // Ensure we only set if empty to avoid overwriting user typing before start
@@ -61,8 +69,14 @@ export function GlobalTracker() {
               onChange={(e) => setTaskName(e.target.value)}
               placeholder="What are you working on?"
               disabled={!!activeEntry}
+              list="task-suggestions"
               className="w-full h-12 pl-4 pr-12 rounded-xl border-2 focus-visible:ring-0 focus-visible:border-primary/50 text-base shadow-sm transition-all"
             />
+            <datalist id="task-suggestions">
+              {taskSuggestions.map(name => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
             {activeEntry && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 <span className="relative flex h-3 w-3">
